@@ -3364,13 +3364,6 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-echarts@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.npm.taobao.org/echarts/download/echarts-4.3.0.tgz"
-  integrity sha1-NyjCtejyd4mPcpm0/hz8U3Fwq9U=
-  dependencies:
-    zrender "4.1.0"
-
 ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/ee-first/download/ee-first-1.1.1.tgz"
@@ -9073,8 +9066,3 @@ yorkie@^2.0.0:
     is-ci "^1.0.10"
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
-
-zrender@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.npm.taobao.org/zrender/download/zrender-4.1.0.tgz?cache=0&sync_timestamp=1618215769844&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fzrender%2Fdownload%2Fzrender-4.1.0.tgz"
-  integrity sha1-hmq5fQdExHPZsxSsWonnIHwUBgg=

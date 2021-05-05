@@ -1,69 +1,8 @@
 <template>
-  <el-container>
-    <el-container class="el-body">
-      <el-aside width="10vw" :style="{height: sideBarHeight}">
-        <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-          active-text-color="#409eff"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          router
-        >
-          <el-menu-item @click="setPathAndName('/DashBoard', '深度学习')" index="/DashBoard">
-            <span class="svg-container">
-              <svg-icon icon-class="tree"></svg-icon>
-            </span>
-            <span slot="title">深度学习</span>
-          </el-menu-item>
-          <el-menu-item @click="setPathAndName('/Order', '目管理')" index="/Order">
-            <span class="svg-container">
-              <svg-icon icon-class="form"></svg-icon>
-            </span>
-            <span slot="title">目管理</span>
-          </el-menu-item>
-          <el-menu-item @click="setPathAndName('/Family', '科管理')" index="/Family">
-            <span class="svg-container">
-              <svg-icon icon-class="nested"></svg-icon>
-            </span>
-            <span slot="title">科管理</span>
-          </el-menu-item>
-          <el-menu-item @click="setPathAndName('/Genus', '属管理')" index="/Genus">
-            <span class="svg-container">
-              <svg-icon icon-class="dashboard"></svg-icon>
-            </span>
-            <span slot="title">属管理</span>
-          </el-menu-item>
-          <el-menu-item @click="setPathAndName('/Species', '种管理')" index="/Species">
-            <span class="svg-container">
-              <svg-icon icon-class="table"></svg-icon>
-            </span>
-            <span slot="title">种管理</span>
-          </el-menu-item>
-        </el-menu>
-        <div style="position: absolute;top: 80%;left: 3%; width: 4%">
-            <el-tag type="primary" class="user">
-              用户：{{ username }}
-            </el-tag>
-            <div style="margin: 10px"></div>
-            <el-button
-              type="danger"
-              style="position:relative;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);width: 160%"
-              @click="logout">
-              登出
-            </el-button>
-        </div>
-      </el-aside>
-      <el-main>
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item :to="{ path: path }">{{ name }}</el-breadcrumb-item>
-        </el-breadcrumb>
-        <router-view/>
-      </el-main>
-    </el-container>
+  <el-container class="el-body">
+    <el-main>
+      <router-view/>
+    </el-main>
   </el-container>
 </template>
 

@@ -33,14 +33,6 @@ http.interceptors.response.use(
       if (code === 20000) {
         return Promise.resolve(data.result);
       }
-      if (code === 40004) {
-        this.$message({
-          showClose: true,
-          message: 'token无效',
-          type: 'error',
-        });
-        this.$router.push({ path: '/login' });
-      }
     }
     return Promise.reject(config.data);
   },
