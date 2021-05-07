@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card id="imgContainer" v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }">
+    <el-card class="content" id="imgContainer" v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }">
       <!--canvas截取流-->
       <canvas v-show="isConfirm" ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
       <!--图片展示-->
@@ -52,13 +52,15 @@
       type="primary"
       style="
         width: 27.5vw;
-        margin-left: 31.25vw;"
+        margin-left: 31.25vw;
+        position: fixed;
+        bottom: 10vh"
       @click="callCamera"
     >开始识别
     </mt-button>
     <div
       style="justify-content: space-between; width: 90%; display: flex;
-      position: fixed; bottom: 12vh"
+      position: fixed; bottom: 10vh"
     >
       <div style="margin-left: 15vw">
         <mt-button v-show="isStart" @click="changeCamera">
@@ -288,5 +290,18 @@ export default {
 </script>
 
 <style scoped>
-
+.content{
+  line-height: 2;
+  margin: auto;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .3);
+  box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, .3);
+  overflow: hidden;
+}
+.content::before{
+  content: '';
+  position: absolute;
+  filter: blur(20px);
+  z-index: -1;
+}
 </style>
