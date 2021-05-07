@@ -7,7 +7,6 @@ import Vuesax from 'vuesax';
 import 'vuesax/dist/vuesax.css';
 import MintUI from 'mint-ui';
 import 'mint-ui/lib/style.css';
-import { Actionsheet } from 'mint-ui';
 import VueAwesomeSwiper from 'vue-awesome-swiper';
 import 'swiper/swiper-bundle.css';
 import 'vue-touch-ripple/dist/vue-touch-ripple.css';
@@ -25,8 +24,6 @@ Vue.use(VueTouchRipple);
 Vue.use(MintUI);
 Vue.use(Vuesax);
 Vue.use(VueAwesomeSwiper);
-Vue.component(Actionsheet.name, Actionsheet);
-
 Vue.prototype.$yolov4Api = yolov4Api;
 Vue.prototype.$databaseApi = databaseApi;
 
