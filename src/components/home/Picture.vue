@@ -27,18 +27,6 @@
     font-size: 14px"
     >
       <!-- todo 信息显示 -->
-      <!-- <div
-        class="swiper"
-        style="
-      width: 100%;
-      display: flex;"
-      >
-        <div style="position: absolute; top: 50%; left: 10vw;" @click="previousPage">&gt;</div>
-        <div>
-          <img :src="pestInfo.imgSrcs[index]" style="padding: 0 2vw" />
-        </div>
-        <div style="position: absolute; top: 50%; right: 10vw" @click="nextPage">&lt;</div>
-      </div>-->
       <swiper ref="mySwiper" :options="swiperOptions" style="width: 100%; height: 30vh; text-align: center;">
         <swiper-slide v-for="(item, index) in pestInfo.imgSrcs" :key="index">
           <img :src="item" style="width: 100%; height: 100%">
@@ -104,7 +92,6 @@ export default {
         plant: '',
         area: '',
       },
-      index: 0,
       swiperOptions: {},
     };
   },
@@ -117,16 +104,6 @@ export default {
     },
   },
   methods: {
-    previousPage() {
-      if (this.index > 0) {
-        this.index -= 1;
-      }
-    },
-    nextPage() {
-      if (this.index < this.pestInfo.imgSrcs.loading - 1) {
-        this.index += 1;
-      }
-    },
     openLoading() {
       loading = this.$vs.loading();
     },
@@ -212,8 +189,6 @@ export default {
                   .selectSpeciesByCode(each)
                   .then((res2) => {
                     this.msgIsShow = true;
-                    // todo
-                    console.log(res2.data[0]);
                     const tmp = res2.data[0];
                     this.pestInfo.name = tmp.name;
                     this.pestInfo.family = tmp.family_name;

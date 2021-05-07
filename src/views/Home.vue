@@ -7,7 +7,7 @@
     <div>
       <div style="height: 90vh">
         <div style="display: flex; flex-direction: row">
-          <div style="width: 50%; text-align: center" @click="onSwipeRight">
+          <div style="width: 50%; text-align: center" @click="video">
             <touch-ripple
               class="typography-box"
               color="#999"
@@ -19,7 +19,7 @@
             </touch-ripple>
           </div>
 
-          <div style="width: 50%; text-align: center" @click="onSwipeLeft">
+          <div style="width: 50%; text-align: center" @click="picture">
             <touch-ripple
               class="typography-box"
               color="#999"
@@ -47,15 +47,18 @@ export default {
       currentPage: 'left',
     };
   },
+  mounted() {
+    this.$router.push({ path: '/Picture' });
+  },
   methods: {
-    onSwipeLeft() {
+    picture() {
       if (this.currentPage === 'right') {
         return;
       }
       this.currentPage = 'right';
       this.$router.push({ path: '/Video' });
     },
-    onSwipeRight() {
+    video() {
       if (this.currentPage === 'left') {
         return;
       }
