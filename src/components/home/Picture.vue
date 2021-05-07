@@ -46,21 +46,18 @@
     </el-card>
 
     <div style="height: 20px"></div>
-
+  <div style="height: 5px"></div>
     <mt-button
       v-show="!isStart"
       type="primary"
       style="
         width: 27.5vw;
-        margin-left: 31.25vw;
-        position: fixed;
-        bottom: 10vh"
+        margin-left: 31.25vw;"
       @click="callCamera"
     >开始识别
     </mt-button>
     <div
-      style="justify-content: space-between; width: 90%; display: flex;
-      position: fixed; bottom: 10vh"
+      style="justify-content: space-between; width: 90%; display: flex;"
     >
       <div style="margin-left: 15vw">
         <mt-button v-show="isStart" @click="changeCamera">

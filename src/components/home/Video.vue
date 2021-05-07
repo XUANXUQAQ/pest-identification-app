@@ -1,18 +1,10 @@
 <template>
-  <div style="text-align: center">
+  <div style="text-align: center; position: relative">
     <canvas v-show="false" ref="canvas" width="100%" height="100%"></canvas>
-    <video
-      class="content"
-      v-show="isStart"
-      ref="video"
-      width="100%"
-      height="100%"
-      autoplay
-    ></video>
-
+    <video class="content" v-show="isStart" ref="video" width="100%" height="100%" autoplay></video>
     <el-card
       v-show="querySuccessFlag"
-      style="position: fixed; width: 30vw; height: 15vh; top: 12vh; right: 9vw; opacity: 0.5;"
+      style="position: absolute; width: 30vw; height: 15vh; top: 3vh; right: 5vw; opacity: 0.5; z-index: 999"
     >
       <div class="name">{{ pestInfo.name }}</div>
       <div class="order">{{ pestInfo.order }}</div>
@@ -23,7 +15,7 @@
 </template>
 
 <script>
-import {Toast} from 'mint-ui';
+import { Toast } from 'mint-ui';
 
 let loading;
 
@@ -123,7 +115,7 @@ export default {
         if (!this.isStart) {
           return;
         }
-        const {canvas} = this.$refs;
+        const { canvas } = this.$refs;
         const ctx = canvas.getContext('2d');
         // 把当前视频帧内容渲染到canvas上
         ctx.drawImage(this.$refs.video, 0, 0, this.canvasWidth, this.canvasHeight);
@@ -203,15 +195,15 @@ export default {
 </script>
 
 <style scoped>
-.content{
+.content {
   line-height: 2;
   margin: auto;
   border-radius: 5px;
-  background: rgba(255, 255, 255, .3);
-  box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, .3);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
-.content::before{
+.content::before {
   content: '';
   position: absolute;
   filter: blur(20px);
