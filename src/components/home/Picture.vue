@@ -1,60 +1,62 @@
 <template>
   <div>
-    <div id="imgContainer" v-bind:style="{ height: canvasHeight, textAlign: 'center' }">
+    <el-card id="imgContainer" v-bind:style="{ width: canvasWidth, height: canvasHeight, textAlign: 'center' }">
       <!--canvas截取流-->
       <canvas v-show="isConfirm" ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
       <!--图片展示-->
-      <video v-show="!isConfirm" ref="video" :width="canvasWidth" :height="canvasHeight" autoplay></video>
+      <video v-show="!isConfirm && isStart" ref="video" :width="canvasWidth" :height="canvasHeight" autoplay></video>
       <svg-icon
         style="
         width: 100%;
         height: 100%;
         position: relative;
-        bottom: 25vh;"
+        bottom: 0;"
         icon-class="placeholder"
         v-show="!isStart && !isConfirm"
       ></svg-icon>
-    </div>
+    </el-card>
 
-    <div
+    <div style="height: 20px"></div>
+
+    <el-card
       class="msg"
       v-show="msgIsShow"
       style="
     width: 100%;
-    height: 45vh;
-    border: 1px solid red;
+    height: 40vh;
     overflow-y: auto;
     font-size: 14px"
     >
       <!-- todo 信息显示 -->
-      <swiper ref="mySwiper" :options="swiperOptions" style="width: 100%; height: 30vh; text-align: center;">
-        <swiper-slide v-for="(item, index) in pestInfo.imgSrcs" :key="index">
-          <img :src="item" style="width: 100%; height: 100%">
-        </swiper-slide>
-        <div class="swiper-pagination" slot="pagination"></div>
-      </swiper>
 
-      <div class="pestName" style="font-size: 24px">{{pestInfo.name}}</div>
+      <mt-swipe style="width: 100%; height: 20vh; text-align: center; border-radius: 15px; box-shadow: 0 0 5px black">
+        <mt-swipe-item v-for="(item, index) in pestInfo.imgSrcs" :key="index">
+          <img :src="item" style="height: 100%" alt="">
+        </mt-swipe-item>
+      </mt-swipe>
+
+      <div class="pestName" style="font-size: 24px">{{ pestInfo.name }}</div>
 
       <div class="ORG">
-        <div class="order" style="font-size: 20px">目：{{pestInfo.order}}</div>
-        <div class="family" style="font-size: 18px">科：{{pestInfo.family}}</div>
-        <div class="genus" style="font-size: 16px">属：{{pestInfo.genus}}</div>
+        <div class="order" style="font-size: 20px">目：{{ pestInfo.order }}</div>
+        <div class="family" style="font-size: 18px">科：{{ pestInfo.family }}</div>
+        <div class="genus" style="font-size: 16px">属：{{ pestInfo.genus }}</div>
       </div>
-      <div class="plant">危害的植物：{{pestInfo.plant}}</div>
-      <div class="area">主要活动区域：{{pestInfo.area}}</div>
-    </div>
+      <div class="plant">危害的植物：{{ pestInfo.plant }}</div>
+      <div class="area">主要活动区域：{{ pestInfo.area }}</div>
+    </el-card>
+
+    <div style="height: 20px"></div>
 
     <mt-button
       v-show="!isStart"
       type="primary"
       style="
-        position: fixed;
-        bottom: 5vh;
-        width: 45vw;
-        left: 27.5vw;"
+        width: 27.5vw;
+        margin-left: 31.25vw;"
       @click="callCamera"
-    >开始识别</mt-button>
+    >开始识别
+    </mt-button>
     <div
       style="justify-content: space-between; width: 90%; display: flex;
       position: fixed; bottom: 3vh"
@@ -71,7 +73,6 @@
 
 <script>
 import { Toast } from 'mint-ui';
-import 'nprogress/nprogress.css';
 
 let loading;
 export default {
@@ -92,7 +93,6 @@ export default {
         plant: '',
         area: '',
       },
-      swiperOptions: {},
     };
   },
   computed: {
@@ -184,7 +184,6 @@ export default {
                 throw 'error';
               }
               Object.keys(result).forEach((each) => {
-                console.log(each);
                 this.$databaseApi
                   .selectSpeciesByCode(each)
                   .then((res2) => {
@@ -235,3 +234,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+</style>
