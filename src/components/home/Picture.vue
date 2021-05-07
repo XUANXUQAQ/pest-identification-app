@@ -5,38 +5,77 @@
       <canvas v-show="isConfirm" ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
       <!--图片展示-->
       <video v-show="!isConfirm" ref="video" :width="canvasWidth" :height="canvasHeight" autoplay></video>
-      <svg-icon style="
+      <svg-icon
+        style="
         width: 100%;
         height: 100%;
         position: relative;
         bottom: 25vh;"
-                icon-class="placeholder"
-                v-show="!isStart && !isConfirm"
+        icon-class="placeholder"
+        v-show="!isStart && !isConfirm"
       ></svg-icon>
     </div>
 
-    <div>
+    <div
+      class="msg"
+      v-show="msgIsShow"
+      style="
+    width: 100%;
+    height: 45vh;
+    border: 1px solid red;
+    overflow-y: auto;
+    font-size: 14px"
+    >
       <!-- todo 信息显示 -->
+      <!-- <div
+        class="swiper"
+        style="
+      width: 100%;
+      display: flex;"
+      >
+        <div style="position: absolute; top: 50%; left: 10vw;" @click="previousPage">&gt;</div>
+        <div>
+          <img :src="pestInfo.imgSrcs[index]" style="padding: 0 2vw" />
+        </div>
+        <div style="position: absolute; top: 50%; right: 10vw" @click="nextPage">&lt;</div>
+      </div>-->
+      <swiper ref="mySwiper" :options="swiperOptions" style="width: 100%; height: 30vh; text-align: center;">
+        <swiper-slide v-for="(item, index) in pestInfo.imgSrcs" :key="index">
+          <img :src="item" style="width: 100%; height: 100%">
+        </swiper-slide>
+        <div class="swiper-pagination" slot="pagination"></div>
+      </swiper>
+
+      <div class="pestName" style="font-size: 24px">{{pestInfo.name}}</div>
+
+      <div class="ORG">
+        <div class="order" style="font-size: 20px">目：{{pestInfo.order}}</div>
+        <div class="family" style="font-size: 18px">科：{{pestInfo.family}}</div>
+        <div class="genus" style="font-size: 16px">属：{{pestInfo.genus}}</div>
+      </div>
+      <div class="plant">危害的植物：{{pestInfo.plant}}</div>
+      <div class="area">主要活动区域：{{pestInfo.area}}</div>
     </div>
 
-    <mt-button v-show="!isStart" type="primary" style="
+    <mt-button
+      v-show="!isStart"
+      type="primary"
+      style="
         position: fixed;
         bottom: 5vh;
         width: 45vw;
         left: 27.5vw;"
-               @click="callCamera">
-      开始识别
-    </mt-button>
-    <div style="justify-content: space-between; width: 90%; display: flex; position: fixed; bottom: 5vh">
+      @click="callCamera"
+    >开始识别</mt-button>
+    <div
+      style="justify-content: space-between; width: 90%; display: flex;
+      position: fixed; bottom: 3vh"
+    >
       <div style="margin-left: 15vw">
-        <mt-button type="primary" v-show="isStart" @click="confirm">
-          确定
-        </mt-button>
+        <mt-button type="primary" v-show="isStart" @click="confirm">确定</mt-button>
       </div>
       <div style="margin-right: 15vw">
-        <mt-button type="primary" v-show="isStart" @click="cancel">
-          取消
-        </mt-button>
+        <mt-button type="primary" v-show="isStart" @click="cancel">取消</mt-button>
       </div>
     </div>
   </div>
@@ -55,6 +94,18 @@ export default {
       isStart: false,
       isConfirm: false,
       imgCount: 0,
+      msgIsShow: false,
+      pestInfo: {
+        name: '',
+        order: '',
+        family: '',
+        genus: '',
+        imgSrcs: [],
+        plant: '',
+        area: '',
+      },
+      index: 0,
+      swiperOptions: {},
     };
   },
   computed: {
@@ -66,6 +117,16 @@ export default {
     },
   },
   methods: {
+    previousPage() {
+      if (this.index > 0) {
+        this.index -= 1;
+      }
+    },
+    nextPage() {
+      if (this.index < this.pestInfo.imgSrcs.loading - 1) {
+        this.index += 1;
+      }
+    },
     openLoading() {
       loading = this.$vs.loading();
     },
@@ -90,19 +151,22 @@ export default {
       this.isStart = true;
       this.isConfirm = false;
       // H5调用电脑摄像头API
-      navigator.mediaDevices.getUserMedia({
-        video: true,
-      }).then((success) => {
-        // 摄像头开启成功
-        this.$refs.video.srcObject = success;
-        // 实时拍照效果
-        this.$refs.video.play();
-        this.closeLoading();
-      }).catch((error) => {
-        console.error('摄像头开启失败，请检查摄像头是否可用！');
-        console.error(error);
-        this.closeLoading();
-      });
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+        })
+        .then((success) => {
+          // 摄像头开启成功
+          this.$refs.video.srcObject = success;
+          // 实时拍照效果
+          this.$refs.video.play();
+          this.closeLoading();
+        })
+        .catch((error) => {
+          console.error('摄像头开启失败，请检查摄像头是否可用！');
+          console.error(error);
+          this.closeLoading();
+        });
     },
     closeCamera() {
       if (!this.$refs.video.srcObject) {
@@ -126,22 +190,56 @@ export default {
       const name = `${this.imgCount}.jpg`;
       this.imgCount += 1;
       // 上传拍照信息  调用接口上传图片
-      this.$yolov4Api.uploadImg({
-        name, file,
-      }).then(() => {
-        this.openLoading();
-        this.$yolov4Api.startPredict().then((res) => {
-          this.closeLoading();
-          const lastFileName = `${this.imgCount - 1}.jpg`;
-          const result = res[lastFileName];
-          if (result.hasOwnProperty('error')) {
-            throw 'error';
-          }
-          Object.keys(result).forEach((each) => {
-            console.log(each);
-            this.$databaseApi.selectSpeciesByCode(each).then((res2) => {
-              console.log(res2.result);
-            }).catch(() => {
+      this.$yolov4Api
+        .uploadImg({
+          name,
+          file,
+        })
+        .then(() => {
+          this.openLoading();
+          this.$yolov4Api
+            .startPredict()
+            .then((res) => {
+              this.closeLoading();
+              const lastFileName = `${this.imgCount - 1}.jpg`;
+              const result = res[lastFileName];
+              if (result.hasOwnProperty('error')) {
+                throw 'error';
+              }
+              Object.keys(result).forEach((each) => {
+                console.log(each);
+                this.$databaseApi
+                  .selectSpeciesByCode(each)
+                  .then((res2) => {
+                    this.msgIsShow = true;
+                    // todo
+                    console.log(res2.data[0]);
+                    const tmp = res2.data[0];
+                    this.pestInfo.name = tmp.name;
+                    this.pestInfo.family = tmp.family_name;
+                    this.pestInfo.order = tmp.order_name;
+                    this.pestInfo.genus = tmp.genus_name;
+                    this.pestInfo.plant = tmp.plant;
+                    this.pestInfo.area = tmp.area;
+                    if (tmp.image) {
+                      let images = tmp.image.split('|');
+                      if (images.length === 2) {
+                        images = images[1].split('&');
+                        this.pestInfo.imgSrcs = images;
+                      }
+                    }
+                  })
+                  .catch(() => {
+                    Toast({
+                      message: '获取预测信息失败',
+                      position: 'middle',
+                      duration: 2000,
+                    });
+                    this.cancel();
+                  });
+              });
+            })
+            .catch(() => {
               Toast({
                 message: '获取预测信息失败',
                 position: 'middle',
@@ -149,28 +247,16 @@ export default {
               });
               this.cancel();
             });
-          });
-        }).catch(() => {
+        })
+        .catch((err) => {
           Toast({
-            message: '获取预测信息失败',
+            message: err.message,
             position: 'middle',
             duration: 2000,
           });
           this.cancel();
         });
-      }).catch((err) => {
-        Toast({
-          message: err.message,
-          position: 'middle',
-          duration: 2000,
-        });
-        this.cancel();
-      });
     },
   },
 };
 </script>
-
-<style scoped>
-
-</style>

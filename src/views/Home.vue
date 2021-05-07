@@ -4,7 +4,7 @@
       <mt-button icon="more" slot="right"></mt-button>
     </mt-header>
 
-    <v-touch v-on:swipeleft="onSwipeLeft" v-on:swiperight="onSwipeRight">
+    <div>
       <div style="height: 90vh">
         <div style="display: flex; flex-direction: row">
           <div style="width: 50%; text-align: center" @click="onSwipeRight">
@@ -32,10 +32,10 @@
           </div>
         </div>
         <el-main>
-          <router-view/>
+          <router-view />
         </el-main>
       </div>
-    </v-touch>
+    </div>
   </div>
 </template>
 
@@ -68,7 +68,8 @@ export default {
 
 <style lang="scss" scoped>
 .font-class {
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    '微软雅黑', Arial, sans-serif;
   font-size: 18px;
 }
 </style>
