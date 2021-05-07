@@ -79,7 +79,6 @@ export default {
   name: 'Picture',
   data() {
     return {
-      headImgSrc: '',
       isStart: false,
       isConfirm: false,
       imgCount: 0,
@@ -131,6 +130,7 @@ export default {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
+          facingMode: 'environment',
         })
         .then((success) => {
           // 摄像头开启成功
