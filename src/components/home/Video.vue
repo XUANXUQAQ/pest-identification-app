@@ -69,12 +69,6 @@ export default {
       this.isConfirm = false;
       this.closeCamera();
     },
-    confirm() {
-      this.drawImage();
-      this.isStart = false;
-      this.isConfirm = true;
-      this.closeCamera();
-    },
     callCamera() {
       this.openLoading();
       this.isStart = true;
@@ -83,7 +77,7 @@ export default {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
-          facingMode: 'environment',
+          facingMode: { exact: 'environment' },
         })
         .then((success) => {
           // 摄像头开启成功
@@ -111,6 +105,9 @@ export default {
     },
     drawImage() {
       setInterval(() => {
+        if (!this.isStart) {
+          return;
+        }
         const ctx = this.$refs.canvas.getContext('2d');
         // 把当前视频帧内容渲染到canvas上
         ctx.drawImage(this.$refs.video, 0, 0, this.canvasWidth, this.canvasHeight);
@@ -139,22 +136,12 @@ export default {
                   this.$databaseApi
                     .selectSpeciesByCode(each)
                     .then((res2) => {
-                      console.log(111111);
                       this.msgIsShow = true;
                       const tmp = res2.data[0];
                       this.pestInfo.name = tmp.name;
                       this.pestInfo.family = tmp.family_name;
                       this.pestInfo.order = tmp.order_name;
                       this.pestInfo.genus = tmp.genus_name;
-                      this.pestInfo.plant = tmp.plant;
-                      this.pestInfo.area = tmp.area;
-                      if (tmp.image) {
-                        let images = tmp.image.split('|');
-                        if (images.length === 2) {
-                          images = images[1].split('&');
-                          this.pestInfo.imgSrcs = images;
-                        }
-                      }
                     })
                     .catch(() => {
                       Toast({
@@ -162,7 +149,6 @@ export default {
                         position: 'middle',
                         duration: 2000,
                       });
-                      this.cancel();
                     });
                 });
               })
@@ -172,7 +158,6 @@ export default {
                   position: 'middle',
                   duration: 2000,
                 });
-                this.cancel();
               });
           })
           .catch((err) => {
@@ -181,7 +166,6 @@ export default {
               position: 'middle',
               duration: 2000,
             });
-            this.cancel();
           });
       }, 3000);
     },
@@ -191,7 +175,6 @@ export default {
     this.drawImage();
   },
   beforeDestroy() {
-    console.log(11111);
     this.cancel();
   },
 };

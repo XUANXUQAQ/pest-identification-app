@@ -27,8 +27,6 @@
     overflow-y: auto;
     font-size: 14px"
     >
-      <!-- todo 信息显示 -->
-
       <mt-swipe style="width: 100%; height: 20vh; text-align: center; border-radius: 15px; box-shadow: 0 0 5px black">
         <mt-swipe-item v-for="(item, index) in pestInfo.imgSrcs" :key="index">
           <img :src="item" style="height: 100%" alt="">
@@ -130,7 +128,7 @@ export default {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
-          facingMode: 'environment',
+          facingMode: { exact: 'environment' },
         })
         .then((success) => {
           // 摄像头开启成功
@@ -219,6 +217,7 @@ export default {
                 position: 'middle',
                 duration: 2000,
               });
+              this.closeLoading();
               this.cancel();
             });
         })
