@@ -1,7 +1,9 @@
 <template>
   <div>
     <mt-header class="font-class" title="林业害虫识别">
-      <mt-button icon="more" slot="right"></mt-button>
+      <router-link to="/" slot="left">
+        <mt-button @click="currentPage = ''" icon="back"></mt-button>
+      </router-link>
     </mt-header>
 
     <div>

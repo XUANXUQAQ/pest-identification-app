@@ -2,20 +2,20 @@
   <div>
     <el-card
       id="imgContainer"
-      v-bind:style="{ width: canvasWidth, height: canvasHeight, textAlign: 'center' }"
+      v-bind:style="{ width: canvasWidth, height: '85vh', textAlign: 'center' }"
     >
-      <canvas v-show="false" ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+      <canvas v-show="false" ref="canvas" :width="'100%'" :height="'100%'"></canvas>
       <video
         v-show="!isConfirm && isStart"
         ref="video"
-        :width="canvasWidth"
-        :height="canvasHeight"
+        :width="'100%'"
+        :height="'100%'"
         autoplay
       ></video>
     </el-card>
 
     <el-card
-      style="position: fixed; width: 30vw; height: 15vh; top: 15vh; right: 8vw; opacity: 0.5;"
+      style="position: fixed; width: 30vw; height: 15vh; top: 12vh; right: 9vw; opacity: 0.5;"
     >
       <div class="name">{{pestInfo.name}}</div>
       <div class="order">{{pestInfo.order}}</div>
@@ -49,10 +49,10 @@ export default {
   },
   computed: {
     canvasWidth() {
-      return document.documentElement.clientWidth * 0.8;
+      return document.documentElement.clientWidth;
     },
     canvasHeight() {
-      return document.documentElement.clientHeight * 0.75;
+      return document.documentElement.clientHeight;
     },
   },
   methods: {

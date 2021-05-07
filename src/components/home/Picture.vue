@@ -1,10 +1,11 @@
 <template>
   <div>
-    <el-card id="imgContainer" v-bind:style="{ width: canvasWidth, height: canvasHeight, textAlign: 'center' }">
+    <el-card id="imgContainer" v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }">
       <!--canvas截取流-->
       <canvas v-show="isConfirm" ref="canvas" :width="canvasWidth" :height="canvasHeight"></canvas>
       <!--图片展示-->
-      <video v-show="!isConfirm && isStart" ref="video" :width="canvasWidth" :height="canvasHeight" autoplay></video>
+      <video v-show="!isConfirm && isStart" ref="video" :width="canvasWidth" :height="canvasHeight * 2"
+             autoplay></video>
       <svg-icon
         style="
         width: 100%;
@@ -57,13 +58,16 @@
     </mt-button>
     <div
       style="justify-content: space-between; width: 90%; display: flex;
-      position: fixed; bottom: 3vh"
+      position: fixed; bottom: 12vh"
     >
       <div style="margin-left: 15vw">
-        <mt-button type="primary" v-show="isStart" @click="confirm">确定</mt-button>
+        <mt-button v-show="isStart" @click="changeCamera">
+          <svg-icon icon-class="camera"></svg-icon>
+        </mt-button>
       </div>
+
       <div style="margin-right: 15vw">
-        <mt-button type="primary" v-show="isStart" @click="cancel">取消</mt-button>
+        <el-button type="primary" v-show="isStart" @click="confirm">确定</el-button>
       </div>
     </div>
   </div>
@@ -90,7 +94,24 @@ export default {
         plant: '',
         area: '',
       },
+      constraints: {
+        audio: false,
+        video: {
+          deviceId: 'null',
+          // 放在app里面需要下面配置一下
+          permissions: {
+            'video-capture': {
+              description: 'Required to capture video using getUserMedia()',
+            },
+          },
+        },
+      },
+      cameras: [],
+      isFront: false,
     };
+  },
+  mounted() {
+    this.getDeviceId();
   },
   computed: {
     canvasWidth() {
@@ -99,8 +120,41 @@ export default {
     canvasHeight() {
       return document.documentElement.clientHeight * 0.3;
     },
+    currentDevice() {
+      return this.constraints.video.deviceId;
+    },
+  },
+  watch: {
+    currentDevice: {
+      handler() {
+        console.log('设备已切换');
+        if (this.isStart) {
+          this.closeCamera();
+          this.callCamera();
+        }
+      },
+    },
   },
   methods: {
+    async getDeviceId() {
+      // 在页面加载完成后获得设备ID数组
+      const res = await navigator.mediaDevices.enumerateDevices();
+      res.forEach((each) => {
+        if (each.kind === 'videoinput') {
+          this.cameras.push(each);
+          this.constraints.video.deviceId = each.deviceId;
+        }
+      });
+    },
+    changeCamera() {
+      if (this.isFront) {
+        this.isFront = false;
+        this.constraints.video.deviceId = this.cameras[1];
+      } else {
+        this.isFront = true;
+        this.constraints.video.deviceId = this.cameras[0];
+      }
+    },
     openLoading() {
       loading = this.$vs.loading();
     },
@@ -120,16 +174,13 @@ export default {
       this.isConfirm = true;
       this.closeCamera();
     },
-    callCamera() {
+    async callCamera() {
       this.openLoading();
       this.isStart = true;
       this.isConfirm = false;
       // H5调用电脑摄像头API
       navigator.mediaDevices
-        .getUserMedia({
-          video: true,
-          facingMode: { exact: 'environment' },
-        })
+        .getUserMedia(this.constraints)
         .then((success) => {
           // 摄像头开启成功
           this.$refs.video.srcObject = success;
@@ -230,6 +281,9 @@ export default {
           this.cancel();
         });
     },
+  },
+  beforeDestroy() {
+    this.cancel();
   },
 };
 </script>
