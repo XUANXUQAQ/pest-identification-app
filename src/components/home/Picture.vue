@@ -127,7 +127,6 @@ export default {
   watch: {
     currentDevice: {
       handler() {
-        console.log('设备已切换');
         if (this.isStart) {
           this.closeCamera();
           this.callCamera();
@@ -147,6 +146,9 @@ export default {
       });
     },
     changeCamera() {
+      console.log(this.cameras);
+      console.log(this.cameras[0]);
+      console.log(this.cameras[1]);
       if (this.isFront) {
         this.isFront = false;
         this.constraints.video.deviceId = this.cameras[1];
