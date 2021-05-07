@@ -146,15 +146,12 @@ export default {
       });
     },
     changeCamera() {
-      console.log(this.cameras);
-      console.log(this.cameras[0]);
-      console.log(this.cameras[1]);
       if (this.isFront) {
-        this.isFront = false;
-        this.constraints.video.deviceId = this.cameras[1];
+        this.isFront = !this.isFront;
+        this.constraints.video.deviceId = this.cameras[1].deviceId;
       } else {
-        this.isFront = true;
-        this.constraints.video.deviceId = this.cameras[0];
+        this.isFront = !this.isFront;
+        this.constraints.video.deviceId = this.cameras[0].deviceId;
       }
     },
     openLoading() {
