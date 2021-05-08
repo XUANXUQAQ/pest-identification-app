@@ -111,7 +111,7 @@ export default {
   font-size: 14px;
   text-shadow: 0 0 2px black;
   color: black;
-  margin: 10px;
+  margin: 20px;
 }
 .title {
   font-size: 40px;
