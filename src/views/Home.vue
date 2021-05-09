@@ -6,7 +6,7 @@
       </router-link>
     </mt-header>
 
-    <div style="
+    <div v-show="!hasContent" style="
       position: fixed;
       text-align: center;
       top: 40vw;"
