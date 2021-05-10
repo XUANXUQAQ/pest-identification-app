@@ -276,6 +276,7 @@ export default {
             position: 'middle',
             duration: 2000,
           });
+          this.closeLoading();
           this.cancel();
         });
     },
