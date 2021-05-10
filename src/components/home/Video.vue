@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import {Toast} from 'mint-ui';
+import { Toast } from 'mint-ui';
 
 let loading;
 
@@ -59,7 +59,7 @@ export default {
       if (!this.isStart) {
         return;
       }
-      const {canvas} = this.$refs;
+      const { canvas } = this.$refs;
       const ctx = canvas.getContext('2d');
       // 把当前视频帧内容渲染到canvas上
       ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.widthContractPercent);
@@ -187,7 +187,6 @@ export default {
       this.$refs.video.srcObject = null;
     },
     drawImage() {
-      this.sendDataAndPredict();
       setInterval(this.sendDataAndPredict, 3000);
     },
   },
