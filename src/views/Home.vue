@@ -14,7 +14,7 @@
       <svg-icon style="width: 90%; height: 90%" icon-class="identify"></svg-icon>
 
       <div class="title">
-        林业害虫识别
+        林业害虫识别 Demo
       </div>
 
       <div class="description">
@@ -64,7 +64,7 @@ export default {
       hasContent: false,
       actions: [
         {
-          name: '拍照识别',
+          name: '图片识别',
           method: this.picture,
         },
         {

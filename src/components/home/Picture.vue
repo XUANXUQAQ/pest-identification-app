@@ -1,10 +1,13 @@
 <template>
   <div>
-    <el-card class="content" id="imgContainer" v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }">
+    <el-card class="content" id="imgContainer"
+             v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }">
       <!--canvas截取流-->
-      <canvas v-show="isConfirm" ref="canvas" :width="realVideoWidth / widthContractPercent" :height="realVideoHeight / heightContractPercent"></canvas>
+      <canvas v-show="isConfirm" ref="canvas" :width="realVideoWidth / widthContractPercent"
+              :height="realVideoHeight / widthContractPercent"></canvas>
       <!--图片展示-->
-      <video v-show="!isConfirm && isStart" ref="video" :width="canvasWidth" :height="canvasHeight"
+      <video v-show="!isConfirm && isStart" ref="video" :width="realVideoWidth / widthContractPercent"
+             :height="realVideoHeight / widthContractPercent"
              autoplay></video>
       <svg-icon
         style="
@@ -46,7 +49,7 @@
     </el-card>
 
     <div style="height: 20px"></div>
-  <div style="height: 5px"></div>
+    <div style="height: 5px"></div>
     <mt-button
       v-show="!isStart"
       type="primary"
@@ -56,17 +59,31 @@
       @click="callCamera"
     >开始识别
     </mt-button>
+
     <div
-      style="justify-content: space-between; width: 90%; display: flex;"
+      style="justify-content: space-between; display: flex; text-align: center"
     >
-      <div style="margin-left: 15vw">
+      <div>
         <mt-button v-show="isStart" @click="changeCamera">
           <svg-icon icon-class="camera"></svg-icon>
         </mt-button>
       </div>
 
-      <div style="margin-right: 15vw">
+      <div>
         <el-button type="primary" v-show="isStart" @click="confirm">确定</el-button>
+      </div>
+
+      <div v-show="isStart">
+        <el-upload
+          :action="fakeImgPostUrl"
+          :on-success="handleChange"
+          :show-file-list="false"
+          multiple
+          ref="uploadImg"
+          :file-list="fileList"
+        >
+          <el-button type="primary">本地上传</el-button>
+        </el-upload>
       </div>
     </div>
   </div>
@@ -74,8 +91,14 @@
 
 <script>
 import { Toast } from 'mint-ui';
+import baseURLs from '@/network/baseURLs';
 
 let loading;
+
+function isEmpty(obj) {
+  return typeof obj === 'undefined' || obj == null || obj === '';
+}
+
 export default {
   name: 'Picture',
   data() {
@@ -93,10 +116,10 @@ export default {
         plant: '',
         area: '',
       },
+      imgData: '',
       realVideoWidth: 0,
       realVideoHeight: 0,
       widthContractPercent: 1,
-      heightContractPercent: 1,
       constraints: {
         audio: false,
         video: {
@@ -111,11 +134,14 @@ export default {
       },
       cameras: [],
       isFront: false,
+      fakeImgPostUrl: '',
+      fileList: [],
     };
   },
   mounted() {
     this.getDeviceId();
     this.getRealVideoSize();
+    this.fakeImgPostUrl = `${baseURLs.databaseURL}/imgFake`;
   },
   computed: {
     canvasWidth() {
@@ -145,8 +171,8 @@ export default {
       video.addEventListener('canplay', function () {
         self.realVideoWidth = this.videoWidth;
         self.realVideoHeight = this.videoHeight;
-        self.widthContractPercent = this.videoWidth / (document.documentElement.clientWidth * 0.8);
-        self.heightContractPercent = this.videoHeight / (document.documentElement.clientHeight * 0.3);
+        const widthContractPercent = this.videoWidth / (document.documentElement.clientWidth * 0.8);
+        self.widthContractPercent = widthContractPercent > 1 ? widthContractPercent : 1;
       });
     },
     clearData() {
@@ -157,6 +183,8 @@ export default {
       this.pestInfo.order = '';
       this.pestInfo.imgSrcs = [];
       this.pestInfo.plant = '';
+      this.imgData = '';
+      this.fileList = [];
     },
     async getDeviceId() {
       // 在页面加载完成后获得设备ID数组
@@ -191,13 +219,31 @@ export default {
       this.closeCamera();
     },
     confirm() {
-      this.drawImage();
+      let imgBase64;
+      if (isEmpty(this.imgData)) {
+        const ctx = this.$refs.canvas.getContext('2d');
+        // 把当前视频帧内容渲染到canvas上
+        ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.widthContractPercent);
+        // 转base64格式、图片格式转换、图片质量压缩
+        imgBase64 = this.$refs.canvas.toDataURL('image/jpeg', 1);
+      } else {
+        const ctx = this.$refs.canvas.getContext('2d');
+        const img = new Image();
+        img.src = this.imgData;
+        const self = this;
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0, self.realVideoWidth / self.widthContractPercent, self.realVideoHeight / self.widthContractPercent);
+        };
+        imgBase64 = this.imgData;
+      }
+      this.drawImage(imgBase64);
       this.isStart = false;
       this.isConfirm = true;
       this.closeCamera();
     },
     async callCamera() {
       this.openLoading();
+      this.msgIsShow = false;
       this.isStart = true;
       this.isConfirm = false;
       // H5调用电脑摄像头API
@@ -227,12 +273,20 @@ export default {
       });
       this.$refs.video.srcObject = null;
     },
-    drawImage() {
-      const ctx = this.$refs.canvas.getContext('2d');
-      // 把当前视频帧内容渲染到canvas上
-      ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.heightContractPercent);
-      // 转base64格式、图片格式转换、图片质量压缩
-      const imgBase64 = this.$refs.canvas.toDataURL('image/jpeg', 0.8);
+    handleChange(resp, file) {
+      this.computeImgBase64(file);
+    },
+    computeImgBase64(file) {
+      const self = this;
+      const reader = new FileReader();
+      reader.readAsDataURL(file.raw);
+      // eslint-disable-next-line func-names
+      reader.onload = function () {
+        self.imgData = this.result;
+        self.confirm();
+      };
+    },
+    drawImage(imgBase64) {
       // 由字节转换为KB 判断大小
       const file = imgBase64.replace('data:image/jpeg;base64,', '');
       const name = `${this.imgCount}.jpg`;
@@ -312,7 +366,7 @@ export default {
 </script>
 
 <style scoped>
-.content{
+.content {
   line-height: 2;
   margin: auto;
   border-radius: 5px;
@@ -320,7 +374,8 @@ export default {
   box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, .3);
   overflow: hidden;
 }
-.content::before{
+
+.content::before {
   content: '';
   position: absolute;
   filter: blur(20px);

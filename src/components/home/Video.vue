@@ -1,7 +1,9 @@
 <template>
-  <div style="text-align: center; position: relative">
-    <canvas v-show="false" ref="canvas" :width="realVideoWidth / widthContractPercent" :height="realVideoHeight / heightContractPercent"></canvas>
-    <video class="content" v-show="isStart" ref="video" :width="realVideoWidth / widthContractPercent" :height="realVideoHeight / heightContractPercent" autoplay></video>
+  <div class="content" style="text-align: center; position: relative">
+    <canvas v-show="false" ref="canvas" :width="realVideoWidth / widthContractPercent"
+            :height="realVideoHeight / widthContractPercent"></canvas>
+    <video v-show="isStart" ref="video" :width="realVideoWidth / widthContractPercent"
+           :height="realVideoHeight / widthContractPercent" autoplay></video>
     <el-card
       v-show="querySuccessFlag"
       style="position: absolute; width: 30vw; height: 15vh; top: 3vh; right: 5vw; opacity: 0.5; z-index: 999"
@@ -15,7 +17,7 @@
 </template>
 
 <script>
-import { Toast } from 'mint-ui';
+import {Toast} from 'mint-ui';
 
 let loading;
 
@@ -31,7 +33,6 @@ export default {
       realVideoWidth: 0,
       realVideoHeight: 0,
       widthContractPercent: 1,
-      heightContractPercent: 1,
       pestInfo: {
         name: '',
         order: '',
@@ -54,14 +55,83 @@ export default {
     };
   },
   methods: {
+    sendDataAndPredict() {
+      if (!this.isStart) {
+        return;
+      }
+      const {canvas} = this.$refs;
+      const ctx = canvas.getContext('2d');
+      // 把当前视频帧内容渲染到canvas上
+      ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.widthContractPercent);
+      // 转base64格式、图片格式转换、图片质量压缩
+      const imgBase64 = canvas.toDataURL('image/jpeg', 1);
+      // 由字节转换为KB 判断大小
+      const file = imgBase64.replace('data:image/jpeg;base64,', '');
+      const name = `${this.imgCount}.jpg`;
+      this.imgCount += 1;
+      // 上传拍照信息  调用接口上传图片
+      this.$yolov4Api
+        .uploadImg({
+          name,
+          file,
+        })
+        .then(() => {
+          this.$yolov4Api
+            .startPredict()
+            .then((res) => {
+              const lastFileName = `${this.imgCount - 1}.jpg`;
+              const result = res[lastFileName];
+              if (result.hasOwnProperty('error')) {
+                throw 'error';
+              }
+              Object.keys(result).forEach((each) => {
+                this.$databaseApi
+                  .selectSpeciesByCode(each)
+                  .then((res2) => {
+                    this.msgIsShow = true;
+                    const tmp = res2.data[0];
+                    this.pestInfo.name = tmp.name;
+                    this.pestInfo.family = tmp.family_name;
+                    this.pestInfo.order = tmp.order_name;
+                    this.pestInfo.genus = tmp.genus_name;
+                    this.querySuccessFlag = true;
+                  })
+                  .catch(() => {
+                    this.querySuccessFlag = false;
+                    Toast({
+                      message: '获取预测信息失败',
+                      position: 'middle',
+                      duration: 2000,
+                    });
+                  });
+              });
+            })
+            .catch(() => {
+              this.querySuccessFlag = false;
+              Toast({
+                message: '获取预测信息失败',
+                position: 'middle',
+                duration: 2000,
+              });
+            });
+        })
+        .catch((err) => {
+          this.querySuccessFlag = false;
+          Toast({
+            message: err.message,
+            position: 'middle',
+            duration: 2000,
+          });
+        });
+    },
     getRealVideoSize() {
       const self = this;
       const video = document.querySelector('video');
       video.addEventListener('canplay', function () {
         self.realVideoWidth = this.videoWidth;
         self.realVideoHeight = this.videoHeight;
-        self.widthContractPercent = this.videoWidth / (document.documentElement.clientWidth * 0.8);
-        self.heightContractPercent = this.videoHeight / (document.documentElement.clientHeight * 0.3);
+        const widthContractPercent = this.videoWidth / (document.documentElement.clientWidth * 0.8);
+        self.widthContractPercent = widthContractPercent > 1 ? widthContractPercent : 1;
       });
     },
     async getDeviceId() {
@@ -117,83 +187,16 @@ export default {
       this.$refs.video.srcObject = null;
     },
     drawImage() {
-      setInterval(() => {
-        if (!this.isStart) {
-          return;
-        }
-        const { canvas } = this.$refs;
-        const ctx = canvas.getContext('2d');
-        // 把当前视频帧内容渲染到canvas上
-        ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.heightContractPercent);
-        // 转base64格式、图片格式转换、图片质量压缩
-        const imgBase64 = canvas.toDataURL('image/jpeg', 0.8);
-        // 由字节转换为KB 判断大小
-        const file = imgBase64.replace('data:image/jpeg;base64,', '');
-        const name = `${this.imgCount}.jpg`;
-        this.imgCount += 1;
-        // 上传拍照信息  调用接口上传图片
-        this.$yolov4Api
-          .uploadImg({
-            name,
-            file,
-          })
-          .then(() => {
-            this.$yolov4Api
-              .startPredict()
-              .then((res) => {
-                const lastFileName = `${this.imgCount - 1}.jpg`;
-                const result = res[lastFileName];
-                if (result.hasOwnProperty('error')) {
-                  throw 'error';
-                }
-                Object.keys(result).forEach((each) => {
-                  this.$databaseApi
-                    .selectSpeciesByCode(each)
-                    .then((res2) => {
-                      this.msgIsShow = true;
-                      const tmp = res2.data[0];
-                      this.pestInfo.name = tmp.name;
-                      this.pestInfo.family = tmp.family_name;
-                      this.pestInfo.order = tmp.order_name;
-                      this.pestInfo.genus = tmp.genus_name;
-                      this.querySuccessFlag = true;
-                    })
-                    .catch(() => {
-                      this.querySuccessFlag = false;
-                      Toast({
-                        message: '获取预测信息失败',
-                        position: 'middle',
-                        duration: 2000,
-                      });
-                    });
-                });
-              })
-              .catch(() => {
-                this.querySuccessFlag = false;
-                Toast({
-                  message: '获取预测信息失败',
-                  position: 'middle',
-                  duration: 2000,
-                });
-              });
-          })
-          .catch((err) => {
-            this.querySuccessFlag = false;
-            Toast({
-              message: err.message,
-              position: 'middle',
-              duration: 2000,
-            });
-          });
-      }, 3000);
+      this.sendDataAndPredict();
+      setInterval(this.sendDataAndPredict, 3000);
     },
   },
   mounted() {
+    this.getRealVideoSize();
     this.getDeviceId().then(() => {
       this.callCamera();
       this.drawImage();
     });
-    this.getRealVideoSize();
   },
   beforeDestroy() {
     this.cancel();
@@ -204,12 +207,13 @@ export default {
 <style scoped>
 .content {
   line-height: 2;
-  margin: auto;
+  padding: 10px;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
+
 .content::before {
   content: '';
   position: absolute;
