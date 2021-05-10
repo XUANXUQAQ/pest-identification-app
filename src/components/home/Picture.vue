@@ -214,22 +214,22 @@ export default {
       const name = `${this.imgCount}.jpg`;
       this.imgCount += 1;
       // 上传拍照信息  调用接口上传图片
+      this.openLoading();
       this.$yolov4Api
         .uploadImg({
           name,
           file,
         })
         .then(() => {
-          this.openLoading();
           this.$yolov4Api
             .startPredict()
             .then((res) => {
-              this.closeLoading();
               const lastFileName = `${this.imgCount - 1}.jpg`;
               const result = res[lastFileName];
               if (result.hasOwnProperty('error')) {
                 throw 'error';
               }
+              this.closeLoading();
               Object.keys(result).forEach((each) => {
                 this.$databaseApi
                   .selectSpeciesByCode(each)
