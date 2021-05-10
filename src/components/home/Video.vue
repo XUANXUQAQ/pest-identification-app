@@ -1,7 +1,7 @@
 <template>
   <div style="text-align: center; position: relative">
-    <canvas v-show="false" ref="canvas" width="100%" height="100%"></canvas>
-    <video class="content" v-show="isStart" ref="video" width="100%" height="100%" autoplay></video>
+    <canvas v-show="false" ref="canvas" :width="realVideoWidth / widthContractPercent" :height="realVideoHeight / heightContractPercent"></canvas>
+    <video class="content" v-show="isStart" ref="video" :width="realVideoWidth / widthContractPercent" :height="realVideoHeight / heightContractPercent" autoplay></video>
     <el-card
       v-show="querySuccessFlag"
       style="position: absolute; width: 30vw; height: 15vh; top: 3vh; right: 5vw; opacity: 0.5; z-index: 999"
@@ -28,6 +28,10 @@ export default {
       imgCount: 0,
       msgIsShow: false,
       querySuccessFlag: false,
+      realVideoWidth: 0,
+      realVideoHeight: 0,
+      widthContractPercent: 1,
+      heightContractPercent: 1,
       pestInfo: {
         name: '',
         order: '',
@@ -49,15 +53,17 @@ export default {
       cameras: [],
     };
   },
-  computed: {
-    canvasWidth() {
-      return document.documentElement.clientWidth;
-    },
-    canvasHeight() {
-      return document.documentElement.clientHeight;
-    },
-  },
   methods: {
+    getRealVideoSize() {
+      const self = this;
+      const video = document.querySelector('video');
+      video.addEventListener('canplay', function () {
+        self.realVideoWidth = this.videoWidth;
+        self.realVideoHeight = this.videoHeight;
+        self.widthContractPercent = this.videoWidth / (document.documentElement.clientWidth * 0.8);
+        self.heightContractPercent = this.videoHeight / (document.documentElement.clientHeight * 0.3);
+      });
+    },
     async getDeviceId() {
       // 在页面加载完成后获得设备ID数组
       const res = await navigator.mediaDevices.enumerateDevices();
@@ -118,7 +124,7 @@ export default {
         const { canvas } = this.$refs;
         const ctx = canvas.getContext('2d');
         // 把当前视频帧内容渲染到canvas上
-        ctx.drawImage(this.$refs.video, 0, 0, this.canvasWidth, this.canvasHeight);
+        ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.heightContractPercent);
         // 转base64格式、图片格式转换、图片质量压缩
         const imgBase64 = canvas.toDataURL('image/jpeg', 0.8);
         // 由字节转换为KB 判断大小
@@ -187,6 +193,7 @@ export default {
       this.callCamera();
       this.drawImage();
     });
+    this.getRealVideoSize();
   },
   beforeDestroy() {
     this.cancel();
