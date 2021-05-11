@@ -1,5 +1,5 @@
 const baseURLs = {
-  yoloURL: 'http://localhost:23345',
+  yoloURL: 'http://www.ruixintd.top:8899',
   databaseURL: 'http://rjgc.club:8099',
 };
 

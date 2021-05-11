@@ -48,17 +48,16 @@
       <div class="area">主要活动区域：{{ pestInfo.area }}</div>
     </el-card>
 
-    <div style="height: 20px"></div>
-    <div style="height: 5px"></div>
-    <mt-button
-      v-show="!isStart"
-      type="primary"
-      style="
-        width: 27.5vw;
-        margin-left: 31.25vw;"
-      @click="callCamera"
-    >开始识别
-    </mt-button>
+    <div style="height: 25px"></div>
+    <div style="text-align: center">
+      <mt-button
+        v-show="!isStart"
+        type="primary"
+        @click="callCamera"
+      >
+        开始识别
+      </mt-button>
+    </div>
 
     <div
       style="justify-content: space-between; display: flex; text-align: center"

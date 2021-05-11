@@ -27,6 +27,7 @@ export default {
     return {
       headImgSrc: '',
       isStart: false,
+      isStillPredicting: false,
       imgCount: 0,
       msgIsShow: false,
       querySuccessFlag: false,
@@ -56,9 +57,10 @@ export default {
   },
   methods: {
     sendDataAndPredict() {
-      if (!this.isStart) {
+      if (!this.isStart || this.isStillPredicting) {
         return;
       }
+      this.isStillPredicting = true;
       const { canvas } = this.$refs;
       const ctx = canvas.getContext('2d');
       // 把当前视频帧内容渲染到canvas上
@@ -82,12 +84,14 @@ export default {
               const lastFileName = `${this.imgCount - 1}.jpg`;
               const result = res[lastFileName];
               if (result.hasOwnProperty('error')) {
+                this.isStillPredicting = false;
                 throw 'error';
               }
               Object.keys(result).forEach((each) => {
                 this.$databaseApi
                   .selectSpeciesByCode(each)
                   .then((res2) => {
+                    this.isStillPredicting = false;
                     this.msgIsShow = true;
                     const tmp = res2.data[0];
                     this.pestInfo.name = tmp.name;
@@ -98,6 +102,7 @@ export default {
                   })
                   .catch(() => {
                     this.querySuccessFlag = false;
+                    this.isStillPredicting = false;
                     Toast({
                       message: '获取预测信息失败',
                       position: 'middle',
@@ -187,7 +192,7 @@ export default {
       this.$refs.video.srcObject = null;
     },
     drawImage() {
-      setInterval(this.sendDataAndPredict, 3000);
+      setInterval(this.sendDataAndPredict, 1000);
     },
   },
   mounted() {

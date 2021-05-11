@@ -15,13 +15,9 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.15.1",
     "mint-ui": "^2.2.13",
-    "nprogress": "^0.2.0",
     "swiper": "^6.5.9",
     "vue": "^2.6.11",
-    "vue-awesome-swiper": "^4.1.1",
     "vue-router": "^3.2.0",
-    "vue-touch": "^2.0.0-beta.4",
-    "vue-touch-ripple": "^3.0.0",
     "vuesax": "^4.0.1-alpha.25",
     "vuex": "^3.4.0"
   },
