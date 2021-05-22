@@ -179,6 +179,7 @@ export default {
   },
   methods: {
     back() {
+      this.cancel();
       this.$router.push({ path: '/' });
     },
     getRealVideoSize() {
