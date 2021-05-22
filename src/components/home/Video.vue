@@ -56,6 +56,10 @@ export default {
     };
   },
   methods: {
+    back() {
+      this.cancel();
+      this.$router.push({ path: '/' });
+    },
     sendDataAndPredict() {
       if (!this.isStart || this.isStillPredicting) {
         return;
@@ -196,11 +200,20 @@ export default {
     },
   },
   mounted() {
+    if (window.history && window.history.pushState) {
+      // 往历史记录里面添加一条新的当前页面的url
+      history.pushState(null, null, document.URL);
+      // 给 popstate 绑定一个方法 监听页面刷新
+      window.addEventListener('popstate', this.back, false); // false阻止默认事件
+    }
     this.getRealVideoSize();
     this.getDeviceId().then(() => {
       this.callCamera();
       this.drawImage();
     });
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.back, false);
   },
   beforeDestroy() {
     this.cancel();

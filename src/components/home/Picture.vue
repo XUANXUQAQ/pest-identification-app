@@ -1,14 +1,25 @@
 <template>
   <div>
-    <el-card class="content" id="imgContainer"
-             v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }">
+    <el-card
+      class="content"
+      id="imgContainer"
+      v-bind:style="{ minWidth: canvasWidth, minHeight: canvasHeight, textAlign: 'center' }"
+    >
       <!--canvas截取流-->
-      <canvas v-show="isConfirm" ref="canvas" :width="realVideoWidth / widthContractPercent"
-              :height="realVideoHeight / widthContractPercent"></canvas>
+      <canvas
+        v-show="isConfirm"
+        ref="canvas"
+        :width="realVideoWidth / widthContractPercent"
+        :height="realVideoHeight / widthContractPercent"
+      ></canvas>
       <!--图片展示-->
-      <video v-show="!isConfirm && isStart" ref="video" :width="realVideoWidth / widthContractPercent"
-             :height="realVideoHeight / widthContractPercent"
-             autoplay></video>
+      <video
+        v-show="!isConfirm && isStart"
+        ref="video"
+        :width="realVideoWidth / widthContractPercent"
+        :height="realVideoHeight / widthContractPercent"
+        autoplay
+      ></video>
       <svg-icon
         style="
         width: 100%;
@@ -31,9 +42,11 @@
     overflow-y: auto;
     font-size: 14px"
     >
-      <mt-swipe style="width: 100%; height: 20vh; text-align: center; border-radius: 15px; box-shadow: 0 0 5px black">
+      <mt-swipe
+        style="width: 100%; height: 20vh; text-align: center; border-radius: 15px; box-shadow: 0 0 5px black"
+      >
         <mt-swipe-item v-for="(item, index) in pestInfo.imgSrcs" :key="index">
-          <img :src="item" style="height: 100%" alt="">
+          <img :src="item" style="height: 100%" alt />
         </mt-swipe-item>
       </mt-swipe>
 
@@ -50,18 +63,10 @@
 
     <div style="height: 25px"></div>
     <div style="text-align: center">
-      <mt-button
-        v-show="!isStart"
-        type="primary"
-        @click="callCamera"
-      >
-        开始识别
-      </mt-button>
+      <mt-button v-show="!isStart" type="primary" @click="callCamera">开始识别</mt-button>
     </div>
 
-    <div
-      style="justify-content: space-between; display: flex; text-align: center"
-    >
+    <div style="justify-content: space-between; display: flex; text-align: center">
       <div>
         <mt-button v-show="isStart" @click="changeCamera">
           <svg-icon icon-class="camera"></svg-icon>
@@ -138,9 +143,18 @@ export default {
     };
   },
   mounted() {
+    if (window.history && window.history.pushState) {
+      // 往历史记录里面添加一条新的当前页面的url
+      history.pushState(null, null, document.URL);
+      // 给 popstate 绑定一个方法 监听页面刷新
+      window.addEventListener('popstate', this.back, false); // false阻止默认事件
+    }
     this.getDeviceId();
     this.getRealVideoSize();
     this.fakeImgPostUrl = `${baseURLs.databaseURL}/imgFake`;
+  },
+  destroyed() {
+    window.removeEventListener('popstate', this.back, false);
   },
   computed: {
     canvasWidth() {
@@ -164,6 +178,9 @@ export default {
     },
   },
   methods: {
+    back() {
+      this.$router.push({ path: '/' });
+    },
     getRealVideoSize() {
       const self = this;
       const video = document.querySelector('video');
@@ -222,7 +239,13 @@ export default {
       if (isEmpty(this.imgData)) {
         const ctx = this.$refs.canvas.getContext('2d');
         // 把当前视频帧内容渲染到canvas上
-        ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.widthContractPercent);
+        ctx.drawImage(
+          this.$refs.video,
+          0,
+          0,
+          this.realVideoWidth / this.widthContractPercent,
+          this.realVideoHeight / this.widthContractPercent,
+        );
         // 转base64格式、图片格式转换、图片质量压缩
         imgBase64 = this.$refs.canvas.toDataURL('image/jpeg', 1);
       } else {
@@ -231,7 +254,13 @@ export default {
         img.src = this.imgData;
         const self = this;
         img.onload = function () {
-          ctx.drawImage(img, 0, 0, self.realVideoWidth / self.widthContractPercent, self.realVideoHeight / self.widthContractPercent);
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            self.realVideoWidth / self.widthContractPercent,
+            self.realVideoHeight / self.widthContractPercent,
+          );
         };
         imgBase64 = this.imgData;
       }
@@ -369,8 +398,8 @@ export default {
   line-height: 2;
   margin: auto;
   border-radius: 5px;
-  background: rgba(255, 255, 255, .3);
-  box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, .3);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
