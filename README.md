@@ -1,4 +1,4 @@
-# 双击两次返回退出
+## 双击两次返回退出
 ```java
 @Override
     public void onBackPressed() {
@@ -17,4 +17,10 @@
             }
         }
     }
+```
+
+## 启用http
+
+```xml
+android:usesCleartextTraffic="true"
 ```
