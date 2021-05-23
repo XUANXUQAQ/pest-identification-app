@@ -332,7 +332,9 @@ export default {
             .startPredict()
             .then((res) => {
               const lastFileName = `${this.imgCount - 1}.jpg`;
-              const result = res[lastFileName];
+              const result = res[lastFileName].statistics;
+              const processedImage = new Image();
+              processedImage.src = `data:image/jpeg;base64,${res[lastFileName].img}`;
               if (result.hasOwnProperty('error')) {
                 throw 'error';
               }
@@ -349,6 +351,15 @@ export default {
                     this.pestInfo.genus = tmp.genus_name;
                     this.pestInfo.plant = tmp.plant;
                     this.pestInfo.area = tmp.area;
+                    const ctx = this.$refs.canvas.getContext('2d');
+                    // 把当前视频帧内容渲染到canvas上
+                    ctx.drawImage(
+                      processedImage,
+                      0,
+                      0,
+                      this.realVideoWidth / this.widthContractPercent,
+                      this.realVideoHeight / this.widthContractPercent,
+                    );
                     if (tmp.image) {
                       let images = tmp.image.split('|');
                       if (images.length === 2) {

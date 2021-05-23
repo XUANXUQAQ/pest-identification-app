@@ -86,7 +86,7 @@ export default {
             .startPredict()
             .then((res) => {
               const lastFileName = `${this.imgCount - 1}.jpg`;
-              const result = res[lastFileName];
+              const result = res[lastFileName].statistics;
               if (result.hasOwnProperty('error')) {
                 this.isStillPredicting = false;
                 throw 'error';
