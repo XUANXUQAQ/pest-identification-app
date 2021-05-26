@@ -1,13 +1,27 @@
 import http from '@/network/axios.config';
 import baseURLs from '@/network/baseURLs';
 
-const baseURL = baseURLs.yoloURL;
+let baseURL = baseURLs.yoloURL;
 
 const yolov4Api = {
   uploadImg(params) {
+    if (navigator.onLine) {
+      baseURL = baseURLs.yoloURL;
+    } else {
+      baseURL = baseURLs.yoloLocalURL;
+    }
+    // todo 测试删除
+    baseURL = baseURLs.yoloLocalURL;
     return http.post(`${baseURL}/uploadPhoto`, params);
   },
   startPredict() {
+    if (navigator.onLine) {
+      baseURL = baseURLs.yoloURL;
+    } else {
+      baseURL = baseURLs.yoloLocalURL;
+    }
+    // todo 测试删除
+    baseURL = baseURLs.yoloLocalURL;
     return http.post(`${baseURL}/startPredict`);
   },
 };

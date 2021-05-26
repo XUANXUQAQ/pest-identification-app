@@ -9,9 +9,7 @@ const http = axios.create({
  * 请求拦截器
  */
 http.interceptors.request.use(
-  (config) => {
-    return config;
-  },
+  (config) => config,
   (error) => {
     Promise.reject(error);
   },
@@ -24,7 +22,10 @@ http.interceptors.response.use(
   (config) => {
     // 请求响应时，关闭进度条
     if (config.status === 200) {
-      const { data } = config;
+      let { data } = config;
+      if (typeof data === 'string') {
+        data = JSON.parse(data);
+      }
       const { code } = data;
       if (code === 20000) {
         return Promise.resolve(data.result);

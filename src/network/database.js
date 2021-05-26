@@ -1,10 +1,17 @@
 import baseURLs from '@/network/baseURLs';
 import http from '@/network/axios.config';
 
-const baseURL = baseURLs.databaseURL;
+let baseURL = baseURLs.databaseURL;
 
 const databaseApi = {
   selectSpeciesByCode(code) {
+    if (navigator.onLine) {
+      baseURL = baseURLs.databaseURL;
+    } else {
+      baseURL = baseURLs.databaseLocalURL;
+    }
+    // todo 测试删除
+    baseURL = baseURLs.databaseLocalURL;
     const url = `${baseURL}/species/${code}`;
     return http.get(url);
   },
