@@ -10,8 +10,6 @@ const yolov4Api = {
     } else {
       baseURL = baseURLs.yoloLocalURL;
     }
-    // todo 测试删除
-    baseURL = baseURLs.yoloLocalURL;
     return http.post(`${baseURL}/uploadPhoto`, params);
   },
   startPredict() {
@@ -20,8 +18,6 @@ const yolov4Api = {
     } else {
       baseURL = baseURLs.yoloLocalURL;
     }
-    // todo 测试删除
-    baseURL = baseURLs.yoloLocalURL;
     return http.post(`${baseURL}/startPredict`);
   },
 };

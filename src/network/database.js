@@ -10,8 +10,6 @@ const databaseApi = {
     } else {
       baseURL = baseURLs.databaseLocalURL;
     }
-    // todo 测试删除
-    baseURL = baseURLs.databaseLocalURL;
     const url = `${baseURL}/species/${code}`;
     return http.get(url);
   },
