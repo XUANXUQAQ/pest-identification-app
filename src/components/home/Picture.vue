@@ -50,15 +50,17 @@
         </mt-swipe-item>
       </mt-swipe>
 
-      <div class="pestName" style="font-size: 24px">{{ pestInfo.name }}</div>
-
-      <div class="ORG">
-        <div class="order" style="font-size: 20px">目：{{ pestInfo.order }}</div>
-        <div class="family" style="font-size: 18px">科：{{ pestInfo.family }}</div>
-        <div class="genus" style="font-size: 16px">属：{{ pestInfo.genus }}</div>
+      <div v-for="each in pestInfoList" :key="each.name">
+        <div class="pestName" style="font-size: 24px">{{ each.name }}</div>
+        <div class="ORG">
+          <div class="order" style="font-size: 20px">目：{{ each.order }}</div>
+          <div class="family" style="font-size: 18px">科：{{ each.family }}</div>
+          <div class="genus" style="font-size: 16px">属：{{ each.genus }}</div>
+        </div>
+        <div class="plant">危害的植物：{{ each.plant }}</div>
+        <div class="area">主要活动区域：{{ each.area }}</div>
       </div>
-      <div class="plant">危害的植物：{{ pestInfo.plant }}</div>
-      <div class="area">主要活动区域：{{ pestInfo.area }}</div>
+      <hr/>
     </el-card>
 
     <div style="height: 25px"></div>
@@ -120,6 +122,7 @@ export default {
         plant: '',
         area: '',
       },
+      pestInfoList: [],
       imgData: '',
       realVideoWidth: 0,
       realVideoHeight: 0,
@@ -200,6 +203,7 @@ export default {
       this.pestInfo.order = '';
       this.pestInfo.imgSrcs = [];
       this.pestInfo.plant = '';
+      this.pestInfoList = [];
       this.imgData = '';
       this.fileList = [];
     },
@@ -336,7 +340,7 @@ export default {
               const processedImage = new Image();
               processedImage.src = `data:image/jpeg;base64,${res[lastFileName].img}`;
               if (result.hasOwnProperty('error')) {
-                throw 'error';
+                throw new Error('error');
               }
               this.closeLoading();
               Object.keys(result).forEach((each) => {
@@ -367,6 +371,7 @@ export default {
                         this.pestInfo.imgSrcs = images;
                       }
                     }
+                    this.pestInfoList.push(this.pestInfo);
                   })
                   .catch(() => {
                     Toast({
