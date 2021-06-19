@@ -1,18 +1,66 @@
 <template>
-  <div class="content" style="text-align: center; position: relative">
-    <canvas v-show="false" ref="canvas" :width="realVideoWidth / widthContractPercent"
-            :height="realVideoHeight / widthContractPercent"></canvas>
-    <video v-show="isStart" ref="video" :width="realVideoWidth / widthContractPercent"
-           :height="realVideoHeight / widthContractPercent" autoplay></video>
-    <el-card
-      v-show="querySuccessFlag"
-      style="position: absolute; width: 30vw; height: 15vh; top: 3vh; right: 5vw; opacity: 0.5; z-index: 999"
-    >
-      <div class="name">{{ pestInfo.name }}</div>
-      <div class="order">{{ pestInfo.order }}</div>
-      <div class="family">{{ pestInfo.family }}</div>
-      <div class="genus">{{ pestInfo.genus }}</div>
-    </el-card>
+  <div>
+    <div class="circle" style="background: white; position: fixed; left: 42%; top: 2vh">
+      <svg-icon
+        style="width: 150%; height: 150%; position: relative; left: 23%; top: 4%"
+        icon-class="butterfly"
+      ></svg-icon>
+      <span style="font-size: 22px; position: relative; top: -30%"> Identify </span>
+    </div>
+    <div class="content" style="text-align: center; position: relative; top: 15vh">
+      <canvas
+        v-show="false"
+        ref="canvas"
+        :width="realVideoWidth / widthContractPercent"
+        :height="realVideoHeight / widthContractPercent"
+      ></canvas>
+      <video
+        v-show="isStart"
+        ref="video"
+        :width="realVideoWidth / widthContractPercent"
+        :height="realVideoHeight / widthContractPercent"
+        autoplay
+      ></video>
+      <!--      <el-card-->
+      <!--        v-show="querySuccessFlag"-->
+      <!--        style="position: absolute; width: 30vw; height: 15vh; top: 3vh; right: 5vw; opacity: 0.5; z-index: 999"-->
+      <!--      >-->
+      <!--        <div class="name">{{ pestInfo.name }}</div>-->
+      <!--        <div class="order">{{ pestInfo.order }}</div>-->
+      <!--        <div class="family">{{ pestInfo.family }}</div>-->
+      <!--        <div class="genus">{{ pestInfo.genus }}</div>-->
+      <!--        -->
+      <!--      </el-card>-->
+      <el-card
+        style="
+          position: fixed;
+          top: 54vh;
+          width: 85%;
+          height: 40vh;
+          font-size: 16px;
+          overflow-y: auto;
+        "
+      >
+        <div v-for="each in pestInfoList" :key="each.name">
+          <div class="pestName" style="font-size: 18px; text-align: center">
+            <h2>{{ each.name }}</h2>
+          </div>
+          <div class="ORG">
+            <div class="order">
+              <h4>目：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.order }}</h4>
+            </div>
+            <div class="family">
+              <h4>科：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.family }}</h4>
+            </div>
+            <div class="genus">
+              <h4>属：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.genus }}</h4>
+            </div>
+          </div>
+          <div style="margin: 15px"></div>
+          <hr />
+        </div>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -20,6 +68,20 @@
 import { Toast } from 'mint-ui';
 
 let loading;
+
+function copy(obj1, objDest) {
+  const obj2 = objDest || {}; // 最初的时候给它一个初始值=它自己或者是一个json
+  for (const name in obj1) {
+    if (typeof obj1[name] === 'object') {
+      // 先判断一下obj[name]是不是一个对象
+      obj2[name] = obj1[name].constructor === Array ? [] : {}; // 我们让要复制的对象的name项=数组或者是json
+      copy(obj1[name], obj2[name]); // 然后来无限调用函数自己 递归思想
+    } else {
+      obj2[name] = obj1[name]; // 如果不是对象，直接等于即可，不会发生引用。
+    }
+  }
+  return obj2; // 然后在把复制好的对象给return出去
+}
 
 export default {
   name: 'Video',
@@ -40,6 +102,7 @@ export default {
         family: '',
         genus: '',
       },
+      pestInfoList: [],
       constraints: {
         audio: false,
         video: {
@@ -68,7 +131,13 @@ export default {
       const { canvas } = this.$refs;
       const ctx = canvas.getContext('2d');
       // 把当前视频帧内容渲染到canvas上
-      ctx.drawImage(this.$refs.video, 0, 0, this.realVideoWidth / this.widthContractPercent, this.realVideoHeight / this.widthContractPercent);
+      ctx.drawImage(
+        this.$refs.video,
+        0,
+        0,
+        this.realVideoWidth / this.widthContractPercent,
+        this.realVideoHeight / this.widthContractPercent,
+      );
       // 转base64格式、图片格式转换、图片质量压缩
       const imgBase64 = canvas.toDataURL('image/jpeg', 1);
       // 由字节转换为KB 判断大小
@@ -91,6 +160,7 @@ export default {
                 this.isStillPredicting = false;
                 throw 'error';
               }
+              const tmpList = [];
               Object.keys(result).forEach((each) => {
                 this.$databaseApi
                   .selectSpeciesByCode(each)
@@ -102,11 +172,15 @@ export default {
                     this.pestInfo.family = tmp.family_name;
                     this.pestInfo.order = tmp.order_name;
                     this.pestInfo.genus = tmp.genus_name;
+                    let tmpData = {};
+                    tmpData = copy(this.pestInfo, tmpData);
+                    tmpList.push(tmpData);
                     this.querySuccessFlag = true;
                   })
                   .catch(() => {
                     this.querySuccessFlag = false;
                     this.isStillPredicting = false;
+                    this.pestInfoList = [];
                     Toast({
                       message: '获取预测信息失败',
                       position: 'middle',
@@ -114,9 +188,12 @@ export default {
                     });
                   });
               });
+              // todo 如果完全相同则不替换
+              this.pestInfoList = tmpList;
             })
             .catch(() => {
               this.querySuccessFlag = false;
+              this.pestInfoList = [];
               Toast({
                 message: '获取预测信息失败',
                 position: 'middle',
@@ -126,6 +203,7 @@ export default {
         })
         .catch((err) => {
           this.querySuccessFlag = false;
+          this.pestInfoList = [];
           Toast({
             message: err.message,
             position: 'middle',
@@ -228,7 +306,7 @@ export default {
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 .content::before {
@@ -236,5 +314,17 @@ export default {
   position: absolute;
   filter: blur(20px);
   z-index: -1;
+}
+
+.circle {
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  /* 宽度和高度需要相等 */
+}
+
+.ORG {
+  font-size: 20px;
+  margin-left: 5vw;
 }
 </style>
