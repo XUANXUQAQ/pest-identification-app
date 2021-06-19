@@ -158,7 +158,7 @@ export default {
               const result = res[lastFileName].statistics;
               if (result.hasOwnProperty('error')) {
                 this.isStillPredicting = false;
-                throw 'error';
+                throw new Error('error');
               }
               const tmpList = [];
               Object.keys(result).forEach((each) => {
