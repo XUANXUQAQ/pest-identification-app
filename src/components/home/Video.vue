@@ -23,9 +23,7 @@
       ></video>
       <el-card
         style="
-          position: fixed;
-          top: 54vh;
-          width: 85%;
+          margin-top: 15px;
           font-size: 16px;
           overflow-y: auto;
           border-radius: 15px"
