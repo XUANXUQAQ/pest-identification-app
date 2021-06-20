@@ -5,7 +5,7 @@
         style="width: 150%; height: 150%; position: relative; left: 23%; top: 4%"
         icon-class="butterfly"
       ></svg-icon>
-      <span style="font-size: 22px; position: relative; top: -30%"> Identify </span>
+      <span style="font-size: 22px; position: relative; top: -30%; font-family: 华文琥珀, sans-serif; color: #5FAABE"> Identify </span>
     </div>
 
     <div style="position: relative; top: 16vh">
@@ -36,7 +36,7 @@
       <el-card
         class="msg"
         v-show="msgIsShow"
-        style="width: 100%; height: 40vh; overflow-y: auto; font-size: 14px"
+        style="width: 100%; height: 40vh; overflow-y: auto; font-size: 14px; border-radius: 15px"
       >
         <mt-swipe
           style="
@@ -53,7 +53,7 @@
         </mt-swipe>
 
         <div v-for="each in pestInfoList" :key="each.name">
-          <div class="pestName" style="font-size: 35px; text-align: center">
+          <div class="pestName" style="font-size: 35px; text-align: center; color: #5FAABE">
             <h2>{{ each.name }}</h2>
           </div>
           <div class="ORG">
@@ -68,12 +68,12 @@
             </div>
           </div>
           <div class="plant"><h4>危害的植物：</h4></div>
-          <div style="margin-left: 5vw; margin-right: 5vw; text-indent: 2em; font-size: 16px">
+          <div style="margin-left: 5vw; margin-right: 5vw; text-indent: 2em; font-size: 16px; color: #5FAABE">
             {{ each.plant }}
           </div>
           <div style="margin: 15px"></div>
           <div class="area"><h4>主要活动区域：</h4></div>
-          <div style="margin-left: 5vw; margin-right: 5vw; text-indent: 2em; font-size: 16px">
+          <div style="margin-left: 5vw; margin-right: 5vw; text-indent: 2em; font-size: 16px; color: #5FAABE">
             {{ each.area }}
           </div>
         </div>
@@ -98,6 +98,7 @@
       >
         <div>
           <el-button
+            class="function-button"
             type="primary"
             v-show="isStart"
             @click="confirm"
@@ -115,7 +116,7 @@
             ref="uploadImg"
             :file-list="fileList"
           >
-            <el-button type="primary" style="width: 25vw; height: 8vh">本地上传</el-button>
+            <el-button class="function-button" type="primary" style="width: 25vw; height: 8vh">本地上传</el-button>
           </el-upload>
         </div>
       </div>
@@ -477,16 +478,19 @@ export default {
 .ORG {
   font-size: 20px;
   margin-left: 5vw;
+  color: #5FAABE;
 }
 
 .plant {
   margin-left: 5vw;
   font-size: 18px;
+  color: #5FAABE;
 }
 
 .area {
   margin-left: 5vw;
   font-size: 18px;
+  color: #5FAABE;
 }
 
 .content::before {
@@ -494,5 +498,12 @@ export default {
   position: absolute;
   filter: blur(20px);
   z-index: -1;
+}
+
+.function-button {
+  background-color: #e8f9ff;
+  background-image: linear-gradient(90deg, #e8f9ff 0%, #fdffe8 100%);
+  border-width: 0;
+  color: #45CBED;
 }
 </style>

@@ -6,23 +6,6 @@
       </router-link>
     </mt-header>
     <div style="height: 90vh">
-      <!--      <div>-->
-      <!--        <div class="hasContent">-->
-      <!--            <span-->
-      <!--              style="width: 50%; height: 50px; text-align: right; margin-left: auto"-->
-      <!--              @click="picture"-->
-      <!--            >-->
-      <!--              <span style="border: 1px solid cornflowerblue; padding: 12px" class="font-class">图片识别</span>-->
-      <!--            </span>-->
-
-      <!--          <span-->
-      <!--            style="width: 50%; height: 50px; text-align: left; margin-right: auto"-->
-      <!--            @click="video"-->
-      <!--          >-->
-      <!--              <span style="border: 1px solid cornflowerblue; padding: 12px" class="font-class">视频识别</span>-->
-      <!--            </span>-->
-      <!--        </div>-->
-      <!--      </div>-->
       <el-main style="height: 100%">
         <router-view />
       </el-main>
@@ -66,9 +49,6 @@ export default {
 
 <style scoped>
 .font-class {
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    '微软雅黑', Arial, sans-serif;
-  font-size: 18px;
   background: rgba(255, 255, 255, 0);
 }
 
@@ -77,8 +57,4 @@ export default {
   top: 5vh;
   left: 6vw;
 }
-/*.hasContent {*/
-/*  padding: 12px;*/
-/*  display: flex;*/
-/*}*/
 </style>

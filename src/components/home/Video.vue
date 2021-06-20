@@ -5,7 +5,7 @@
         style="width: 150%; height: 150%; position: relative; left: 23%; top: 4%"
         icon-class="butterfly"
       ></svg-icon>
-      <span style="font-size: 22px; position: relative; top: -30%"> Identify </span>
+      <span style="font-size: 22px; position: relative; top: -30%; color: #5FAABE"> Identify </span>
     </div>
     <div class="content" style="text-align: center; position: relative; top: 15vh">
       <canvas
@@ -21,39 +21,28 @@
         :height="realVideoHeight / widthContractPercent"
         autoplay
       ></video>
-      <!--      <el-card-->
-      <!--        v-show="querySuccessFlag"-->
-      <!--        style="position: absolute; width: 30vw; height: 15vh; top: 3vh; right: 5vw; opacity: 0.5; z-index: 999"-->
-      <!--      >-->
-      <!--        <div class="name">{{ pestInfo.name }}</div>-->
-      <!--        <div class="order">{{ pestInfo.order }}</div>-->
-      <!--        <div class="family">{{ pestInfo.family }}</div>-->
-      <!--        <div class="genus">{{ pestInfo.genus }}</div>-->
-      <!--        -->
-      <!--      </el-card>-->
       <el-card
         style="
           position: fixed;
           top: 54vh;
           width: 85%;
-          height: 40vh;
           font-size: 16px;
           overflow-y: auto;
-        "
+          border-radius: 15px"
       >
         <div v-for="each in pestInfoList" :key="each.name">
-          <div class="pestName" style="font-size: 18px; text-align: center">
+          <div class="pestName" style="font-size: 18px; text-align: center; color: #5FAABE">
             <h2>{{ each.name }}</h2>
           </div>
           <div class="ORG">
             <div class="order">
-              <h4>目：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.order }}</h4>
+              <h5>目：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.order }}</h5>
             </div>
             <div class="family">
-              <h4>科：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.family }}</h4>
+              <h5>科：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.family }}</h5>
             </div>
             <div class="genus">
-              <h4>属：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.genus }}</h4>
+              <h5>属：&nbsp;&nbsp;&nbsp;&nbsp;{{ each.genus }}</h5>
             </div>
           </div>
           <div style="margin: 15px"></div>
@@ -116,6 +105,7 @@ export default {
         },
       },
       cameras: [],
+      preImage: undefined,
     };
   },
   methods: {
@@ -160,7 +150,7 @@ export default {
                 this.isStillPredicting = false;
                 throw new Error('error');
               }
-              const tmpList = [];
+              this.pestInfoList = [];
               Object.keys(result).forEach((each) => {
                 this.$databaseApi
                   .selectSpeciesByCode(each)
@@ -173,8 +163,8 @@ export default {
                     this.pestInfo.order = tmp.order_name;
                     this.pestInfo.genus = tmp.genus_name;
                     let tmpData = {};
+                    this.pestInfoList.push(tmpData);
                     tmpData = copy(this.pestInfo, tmpData);
-                    tmpList.push(tmpData);
                     this.querySuccessFlag = true;
                   })
                   .catch(() => {
@@ -188,8 +178,6 @@ export default {
                     });
                   });
               });
-              // todo 如果完全相同则不替换
-              this.pestInfoList = tmpList;
             })
             .catch(() => {
               this.querySuccessFlag = false;
@@ -274,7 +262,7 @@ export default {
       this.$refs.video.srcObject = null;
     },
     drawImage() {
-      setInterval(this.sendDataAndPredict, 1000);
+      setInterval(this.sendDataAndPredict, 5000);
     },
   },
   mounted() {
@@ -326,5 +314,7 @@ export default {
 .ORG {
   font-size: 20px;
   margin-left: 5vw;
+  text-align: left;
+  color: #5FAABE;
 }
 </style>
