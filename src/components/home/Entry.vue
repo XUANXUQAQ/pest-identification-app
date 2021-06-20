@@ -5,7 +5,7 @@
         <mt-button icon="back"></mt-button>
       </router-link>
     </mt-header>
-    <div style="height: 90vh">
+    <div style="height: 100vh">
       <el-main style="height: 100%">
         <router-view />
       </el-main>
