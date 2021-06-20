@@ -389,6 +389,7 @@ export default {
                 throw new Error('error');
               }
               this.closeLoading();
+              this.pestInfo.imgSrcs = [];
               Object.keys(result).forEach((each) => {
                 this.$databaseApi
                   .selectSpeciesByCode(each)
@@ -414,7 +415,9 @@ export default {
                       let images = tmp.image.split('|');
                       if (images.length === 2) {
                         images = images[1].split('&');
-                        this.pestInfo.imgSrcs = images;
+                        images.forEach((eachImg) => {
+                          this.pestInfo.imgSrcs.push(eachImg);
+                        });
                       }
                     }
                     let tmpData = {};
