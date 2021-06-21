@@ -55,6 +55,7 @@
         <div v-for="each in pestInfoList" :key="each.name">
           <div class="pestName" style="font-size: 35px; text-align: center; color: #5FAABE">
             <h2>{{ each.name }}</h2>
+            <h4>数量：{{ each.num }}</h4>
           </div>
           <div class="ORG">
             <div class="order">
@@ -81,10 +82,6 @@
           <hr />
         </div>
       </el-card>
-
-      <!--    <div style="text-align: center">-->
-      <!--      <mt-button v-show="!isStart" type="primary" @click="callCamera">开始识别</mt-button>-->
-      <!--    </div>-->
       <div style="text-align: center">
         <mt-button v-show="isStart" @click="changeCamera">
           <svg-icon icon-class="camera"></svg-icon>
@@ -164,6 +161,7 @@ export default {
         imgSrcs: [],
         plant: '',
         area: '',
+        num: 0,
       },
       pestInfoList: [],
       imgData: '',
@@ -402,6 +400,7 @@ export default {
                     this.pestInfo.genus = tmp.genus_name;
                     this.pestInfo.plant = tmp.plant;
                     this.pestInfo.area = tmp.area;
+                    this.pestInfo.num = result[each];
                     const ctx = this.$refs.canvas.getContext('2d');
                     // 把当前视频帧内容渲染到canvas上
                     ctx.drawImage(

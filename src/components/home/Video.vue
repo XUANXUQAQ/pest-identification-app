@@ -31,6 +31,7 @@
         <div v-for="each in pestInfoList" :key="each.name">
           <div class="pestName" style="font-size: 18px; text-align: center; color: #5FAABE">
             <h2>{{ each.name }}</h2>
+            <h4>数量：{{ each.num }}</h4>
           </div>
           <div class="ORG">
             <div class="order">
@@ -88,6 +89,7 @@ export default {
         order: '',
         family: '',
         genus: '',
+        num: 0,
       },
       pestInfoList: [],
       constraints: {
@@ -160,9 +162,10 @@ export default {
                     this.pestInfo.family = tmp.family_name;
                     this.pestInfo.order = tmp.order_name;
                     this.pestInfo.genus = tmp.genus_name;
+                    this.pestInfo.num = result[each];
                     let tmpData = {};
-                    this.pestInfoList.push(tmpData);
                     tmpData = copy(this.pestInfo, tmpData);
+                    this.pestInfoList.push(tmpData);
                     this.querySuccessFlag = true;
                   })
                   .catch(() => {
