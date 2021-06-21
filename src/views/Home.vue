@@ -8,9 +8,13 @@
         ></svg-icon>
       </div>
 
-      <div class="title" style="position: fixed; bottom: 43vh; width: 100%">Welcome!</div>
+      <div class="title" style="position: fixed; bottom: 43vh; width: 100%">
+        Welcome!
+      </div>
 
       <div class="description" style="position: fixed; bottom: 40vh; width: 100%">
+        <div style="margin-top: 10px"></div>
+        <br/><span>Pest Identification</span><br/>
         Click the bottom to start
       </div>
     </div>
