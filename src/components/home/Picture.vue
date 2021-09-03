@@ -193,7 +193,7 @@ export default {
       // 给 popstate 绑定一个方法 监听页面刷新
       window.addEventListener('popstate', this.back, false); // false阻止默认事件
     }
-    this.fakeImgPostUrl = `${baseURLs.databaseURL}/imgFake`;
+    this.fakeImgPostUrl = `${baseURLs.databaseLocalURL}/imgFake`;
     this.getRealVideoSize();
     this.getDeviceId().then(() => {
       this.callCamera();
