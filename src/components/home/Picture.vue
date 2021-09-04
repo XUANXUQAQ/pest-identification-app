@@ -106,6 +106,7 @@
 
         <div v-show="isStart">
           <el-upload
+            v-if="fakeImgPostUrl"
             :action="fakeImgPostUrl"
             :on-success="handleChange"
             :show-file-list="false"
@@ -125,7 +126,7 @@
 import { Toast } from 'mint-ui';
 import baseURLs from '@/network/baseURLs';
 
-let loading;
+let loading = null;
 
 function copy(obj1, objDest) {
   const obj2 = objDest || {}; // 最初的时候给它一个初始值=它自己或者是一个json
@@ -186,14 +187,20 @@ export default {
       fileList: [],
     };
   },
-  mounted() {
+  created() {
     if (window.history && window.history.pushState) {
       // 往历史记录里面添加一条新的当前页面的url
-      history.pushState(null, null, document.URL);
+      window.history.pushState(null, null, document.URL);
       // 给 popstate 绑定一个方法 监听页面刷新
       window.addEventListener('popstate', this.back, false); // false阻止默认事件
     }
-    this.fakeImgPostUrl = `${baseURLs.databaseLocalURL}/imgFake`;
+    if (navigator.onLine) {
+      this.fakeImgPostUrl = `${baseURLs.databaseURL}/imgFake`;
+    } else {
+      this.fakeImgPostUrl = `${baseURLs.databaseLocalURL}/imgFake`;
+    }
+  },
+  mounted() {
     this.getRealVideoSize();
     this.getDeviceId().then(() => {
       this.callCamera();
@@ -270,18 +277,19 @@ export default {
       }
     },
     openLoading() {
+      if (!navigator.onLine) {
+        return;
+      }
       loading = this.$vs.loading();
     },
     closeLoading() {
-      if (loading) {
+      if (loading && navigator.onLine) {
         loading.close();
       }
     },
     cancel() {
-      // this.isStart = false;
-      // this.isConfirm = false;
       this.closeCamera();
-      location.reload();
+      window.location.reload();
     },
     confirm() {
       let imgBase64;
@@ -334,8 +342,8 @@ export default {
           this.closeLoading();
         })
         .catch((error) => {
-          console.error('摄像头开启失败，请检查摄像头是否可用！');
-          console.error(error);
+          console.log('摄像头开启失败，请检查摄像头是否可用！');
+          console.log(error);
           this.closeLoading();
         });
     },
@@ -356,12 +364,12 @@ export default {
     computeImgBase64(file) {
       const self = this;
       const reader = new FileReader();
-      reader.readAsDataURL(file.raw);
       // eslint-disable-next-line func-names
-      reader.onload = function () {
+      reader.onloadend = function () {
         self.imgData = this.result;
         self.confirm();
       };
+      reader.readAsDataURL(file.raw);
     },
     drawImage(imgBase64) {
       // 由字节转换为KB 判断大小
@@ -423,7 +431,8 @@ export default {
                     tmpData = copy(this.pestInfo, tmpData);
                     this.pestInfoList.push(tmpData);
                   })
-                  .catch(() => {
+                  .catch((err) => {
+                    console.log(err);
                     Toast({
                       message: '获取预测信息失败',
                       position: 'middle',
@@ -433,7 +442,8 @@ export default {
                   });
               });
             })
-            .catch(() => {
+            .catch((err) => {
+              console.log(err);
               Toast({
                 message: '获取预测信息失败',
                 position: 'middle',
