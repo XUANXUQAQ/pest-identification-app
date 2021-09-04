@@ -108,7 +108,7 @@
           <el-upload
             v-if="fakeImgPostUrl"
             :action="fakeImgPostUrl"
-            :on-success="handleChange"
+            :on-change="handleChange"
             :show-file-list="false"
             multiple
             ref="uploadImg"
@@ -127,6 +127,7 @@ import { Toast } from 'mint-ui';
 import baseURLs from '@/network/baseURLs';
 
 let loading = null;
+let predicted = false;
 
 function copy(obj1, objDest) {
   const obj2 = objDest || {}; // 最初的时候给它一个初始值=它自己或者是一个json
@@ -188,6 +189,7 @@ export default {
     };
   },
   created() {
+    predicted = false;
     if (window.history && window.history.pushState) {
       // 往历史记录里面添加一条新的当前页面的url
       window.history.pushState(null, null, document.URL);
@@ -358,7 +360,11 @@ export default {
       });
       this.$refs.video.srcObject = null;
     },
-    handleChange(resp, file) {
+    handleChange(file) {
+      if (predicted) {
+        return;
+      }
+      predicted = true;
       this.computeImgBase64(file);
     },
     computeImgBase64(file) {
